@@ -181,8 +181,8 @@ def minJWithGradDescent(Theta1, Theta2, X, y):
     alpha = 0.004 #learning rate
     Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
     
-    for i in range(1001): #deriv tries to get as small as possible
-        if i % 100 == 0:
+    for i in range(5001): #deriv tries to get as small as possible
+        if i % 250 == 0:
             print(i, J(Theta1, Theta2, X, y))
         Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
         Theta1 -= (alpha * Theta1_grad)
