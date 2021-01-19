@@ -5,8 +5,8 @@ keywords = ["car", "motorcycle", "boat", "plane"]
 width = 40
 height = 40
 shouldDownloadImages = False
-shouldResizeImages = True
-shouldTrainModel = False
+shouldResizeImages = False
+shouldTrainModel = True
 shouldMakePredictions = False
 
 def main():
