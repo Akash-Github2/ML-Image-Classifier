@@ -2,11 +2,11 @@ import os
 
 #global variables
 keywords = ["car", "motorcycle", "boat", "plane"]
-width = 35
-height = 35
+width = 40
+height = 40
 shouldDownloadImages = False
-shouldResizeImages = False
-shouldTrainModel = True
+shouldResizeImages = True
+shouldTrainModel = False
 shouldMakePredictions = False
 
 def main():

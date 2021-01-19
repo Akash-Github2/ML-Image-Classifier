@@ -38,7 +38,7 @@ def getActualCategory(imageName):
 #returns the category as a string
 def predictObject(fileDir, imageName, Theta1, Theta2):
     origImgFilePath = fileDir + "/" + imageName
-    print(origImgFilePath)
+    # print(origImgFilePath)
     img = cv2.imread(origImgFilePath, cv2.IMREAD_GRAYSCALE)
     dim = (width, height)
     resizedImg = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
