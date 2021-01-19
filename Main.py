@@ -2,12 +2,12 @@ import os
 
 #global variables
 keywords = ["car", "motorcycle", "boat", "plane"]
-width = 32
-height = 32
+width = 35
+height = 35
 shouldDownloadImages = False
-shouldResizeImages = False
+shouldResizeImages = True
 shouldTrainModel = False
-shouldMakePredictions = True
+shouldMakePredictions = False
 
 def main():
     #imports are here to avoid circular import loop error
