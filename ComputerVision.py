@@ -38,6 +38,7 @@ def getActualCategory(imageName):
 #returns the category as a string
 def predictObject(fileDir, imageName, Theta1, Theta2):
     origImgFilePath = fileDir + "/" + imageName
+    print(origImgFilePath)
     img = cv2.imread(origImgFilePath, cv2.IMREAD_GRAYSCALE)
     dim = (width, height)
     resizedImg = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
@@ -82,17 +83,16 @@ def randInitializeWeight(L_in, L_out):
 
 #Trains the model and will return the trained Theta1 and Theta2
 def trainModel(datasetX, datasetY):
+    print("Training Model Started ...")
     input_layer_size = len(datasetX[0])
     hidden_layer_size = 40
     output_layer_size = len(keywords)
     
-    Theta1 = randInitializeWeight(input_layer_size, hidden_layer_size)
-    Theta2 = randInitializeWeight(hidden_layer_size, output_layer_size)
-    print(J(Theta1, Theta2, datasetX, datasetY))
-    Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, datasetX, datasetY)
-    print("---")
+    Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
+    Theta2_init = randInitializeWeight(hidden_layer_size, output_layer_size)
     
-    Theta1, Theta2 = minJWithGradDescent(Theta1, Theta2, datasetX, datasetY)
+    Theta1, Theta2 = minJWithGradDescent(Theta1_init, Theta2_init, datasetX, datasetY)
+    print("Training Model Completed!")
     return Theta1, Theta2
 
 def sigmoid(z):
@@ -174,8 +174,21 @@ def getGrad(Theta1, Theta2, X, y):
     Theta1_grad[:][1:] += (lambdaVal/m) * Theta1[:][1:]
     Theta2_grad[:][1:] += (lambdaVal/m) * Theta2[:][1:]
     return Theta1_grad, Theta2_grad
+
+
+#Uses gradient descent to reduce the J value and then returns the Theta1 and Theta2
+def minJWithGradDescent(Theta1, Theta2, X, y):
+    alpha = 0.004 #learning rate
+    Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
+    
+    for i in range(1001): #deriv tries to get as small as possible
+        if i % 100 == 0:
+            print(i, J(Theta1, Theta2, X, y))
+        Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
+        Theta1 -= (alpha * Theta1_grad)
+        Theta2 -= (alpha * Theta2_grad)
         
-        
+    return Theta1, Theta2
 
 #convert y to Y (an nxlen(keywords) dimensional matrix of 0s and 1s)
 def convYToNewFormat(y):
@@ -186,21 +199,6 @@ def convYToNewFormat(y):
         Y[i][ind] = 1
     
     return Y
-
-#Uses gradient descent to reduce the J value and then returns the Theta1 and Theta2
-def minJWithGradDescent(Theta1, Theta2, X, y):
-    alpha = 0.004 #learning rate
-    Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
-    
-    for i in range(3001): #deriv tries to get as small as possible
-        if i % 250 == 0:
-            print(i, J(Theta1, Theta2, X, y))
-        Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
-        Theta1 -= (alpha * Theta1_grad)
-        Theta2 -= (alpha * Theta2_grad)
-        
-    return Theta1, Theta2
-
 
 
 #Only for initial testing to make sure back-propagation works
