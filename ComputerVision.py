@@ -89,11 +89,17 @@ def trainModel(datasetX, datasetY):
     input_layer_size = len(datasetX[0])
     hidden_layer_size = 60
     output_layer_size = len(keywords)
+    Y = convYToNewFormat(datasetY) # n x len(keywords) matrix
     
     Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
     Theta2_init = randInitializeWeight(hidden_layer_size, output_layer_size)
+    jVal = J(Theta1_init, Theta2_init, datasetX, Y)
+    while jVal > 2.65:
+        Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
+        Theta2_init = randInitializeWeight(hidden_layer_size, output_layer_size)
+        jVal = J(Theta1_init, Theta2_init, datasetX, Y)
     
-    Theta1, Theta2 = minJWithGradDescent(Theta1_init, Theta2_init, datasetX, datasetY)
+    Theta1, Theta2 = minJWithGradDescent(Theta1_init, Theta2_init, datasetX, Y)
     print("Training Model Completed!")
     end_time = arrow.utcnow()
     print("Time to Train (minutes):", str((end_time-start_time).total_seconds()/60))
@@ -110,15 +116,14 @@ def sigmoidGradient(z):
 #X is the datasetX
 #y is the datasetY (nx1 dimensional matrix of strings) -> will be converted to Y (an nxlen(keywords) dimensional matrix of 0s and 1s)
 #Theta1: 40x901, Theta2: 4x41
-def J(Theta1, Theta2, X, y):
+def J(Theta1, Theta2, X, Y):
     X = np.array(X)
     J = 0
     m = len(X)
-    lambdaVal = 2
+    lambdaVal = 1.5
     
     onesCol4X = np.ones([1, len(X)], dtype = float)
     X2 = np.insert(X, 0, onesCol4X, axis=1)
-    Y = convYToNewFormat(y) # n x len(keywords) matrix
     
     for i in range(m):
         a1 = np.array([X2[i]]) #one row of X2 (one training example at a time) (1x901)
@@ -144,14 +149,13 @@ def J(Theta1, Theta2, X, y):
         
 
 #gets the derivative of all thetas, will return Theta1_grad and Theta2_grad
-def getGrad(Theta1, Theta2, X, y):
+def getGrad(Theta1, Theta2, X, Y):
     X = np.array(X)
     m = len(X)
-    lambdaVal = 2
+    lambdaVal = 1.5
     onesCol4X = np.ones([1, len(X)], dtype = float)
     X2 = np.insert(X, 0, onesCol4X, axis=1)
-    
-    Y = convYToNewFormat(y) # n x len(keywords) matrix
+
     delta1 = np.zeros([len(Theta1), len(Theta1[0])], dtype = float)
     delta2 = np.zeros([len(Theta2), len(Theta2[0])], dtype = float)
     
@@ -179,23 +183,26 @@ def getGrad(Theta1, Theta2, X, y):
 
 
 #Uses gradient descent to reduce the J value and then returns the Theta1 and Theta2
-def minJWithGradDescent(Theta1, Theta2, X, y):
+def minJWithGradDescent(Theta1, Theta2, X, Y):
     alpha = 0.004 #learning rate
-    Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
+    Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, Y)
     
-    for i in range(8501): #deriv tries to get as small as possible
+    for i in range(15001): #deriv tries to get as small as possible
         if i % 50 == 0:
-            jVal = J(Theta1, Theta2, X, y)
-            print(i, jVal)
-            if jVal < 1.3:
+            jVal = J(Theta1, Theta2, X, Y)
+            if i % 100 == 0:
+                print(i, jVal)
+            if jVal < 1.28:
                 alpha = 0.0015
-            elif jVal < 1.6:
+            elif jVal < 1.45:
                 alpha = 0.002
+            elif jVal < 1.6:
+                alpha = 0.0025
             elif jVal < 2.1:
                 alpha = 0.003
             else:
                 alpha = 0.004
-        Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
+        Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, Y)
         Theta1 -= (alpha * Theta1_grad)
         Theta2 -= (alpha * Theta2_grad)
         
