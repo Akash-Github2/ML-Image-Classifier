@@ -5,6 +5,10 @@ import numpy as np
 import os
 import arrow
 from Main import keywords, width, height #imports the public variables to the class
+import DatasetManager as dm
+
+#For machine learning regularization
+lambdaVal = 1.25
 
 #Loops through all the testing data set and calls predictObject() method
 def makePredictions(Theta1, Theta2): #starts in the main directory
@@ -91,13 +95,15 @@ def trainModel(datasetX, datasetY):
     output_layer_size = len(keywords)
     Y = convYToNewFormat(datasetY) # n x len(keywords) matrix
     
-    Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
-    Theta2_init = randInitializeWeight(hidden_layer_size, output_layer_size)
-    jVal = J(Theta1_init, Theta2_init, datasetX, Y)
-    while jVal > 2.65:
-        Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
-        Theta2_init = randInitializeWeight(hidden_layer_size, output_layer_size)
-        jVal = J(Theta1_init, Theta2_init, datasetX, Y)
+    # Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
+    # Theta2_init = randInitializeWeight(hidden_layer_size, output_layer_size)
+    # jVal = J(Theta1_init, Theta2_init, datasetX, Y)
+    # while jVal > 2.55:
+    #     Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
+    #     Theta2_init = randInitializeWeight(hidden_layer_size, output_layer_size)
+    #     jVal = J(Theta1_init, Theta2_init, datasetX, Y)
+        
+    Theta1_init, Theta2_init = dm.retrieveWeightsFromFiles() #Retrieve thetas from file so it starts ahead already
     
     Theta1, Theta2 = minJWithGradDescent(Theta1_init, Theta2_init, datasetX, Y)
     print("Training Model Completed!")
@@ -120,7 +126,6 @@ def J(Theta1, Theta2, X, Y):
     X = np.array(X)
     J = 0
     m = len(X)
-    lambdaVal = 1.5
     
     onesCol4X = np.ones([1, len(X)], dtype = float)
     X2 = np.insert(X, 0, onesCol4X, axis=1)
@@ -152,7 +157,6 @@ def J(Theta1, Theta2, X, Y):
 def getGrad(Theta1, Theta2, X, Y):
     X = np.array(X)
     m = len(X)
-    lambdaVal = 1.5
     onesCol4X = np.ones([1, len(X)], dtype = float)
     X2 = np.insert(X, 0, onesCol4X, axis=1)
 
@@ -187,12 +191,14 @@ def minJWithGradDescent(Theta1, Theta2, X, Y):
     alpha = 0.004 #learning rate
     Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, Y)
     
-    for i in range(15001): #deriv tries to get as small as possible
+    for i in range(65001): #deriv tries to get as small as possible
         if i % 50 == 0:
             jVal = J(Theta1, Theta2, X, Y)
             if i % 100 == 0:
                 print(i, jVal)
-            if jVal < 1.28:
+            if jVal < 1:
+                alpha = 0.001
+            elif jVal < 1.28:
                 alpha = 0.0015
             elif jVal < 1.45:
                 alpha = 0.002
