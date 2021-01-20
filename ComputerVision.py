@@ -87,7 +87,7 @@ def trainModel(datasetX, datasetY):
     print("Training Model Started ...")
     start_time = arrow.utcnow()
     input_layer_size = len(datasetX[0])
-    hidden_layer_size = 100
+    hidden_layer_size = 70
     output_layer_size = len(keywords)
     
     Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
@@ -186,14 +186,17 @@ def minJWithGradDescent(Theta1, Theta2, X, y):
     alpha = 0.004 #learning rate
     Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
     
-    for i in range(501): #deriv tries to get as small as possible
-        if i % 20 == 0:
-            print(i, J(Theta1, Theta2, X, y))
-        if i < 1000:
+    for i in range(5001): #deriv tries to get as small as possible
+        if i % 50 == 0:
+            jVal = J(Theta1, Theta2, X, y)
+            print(i, jVal)
+            if jVal < 1.4:
+                alpha = 0.0015
+        if i < 400 and alpha != 0.0015:
             alpha = 0.004
-        elif i < 3500:
+        elif i < 4000 and alpha != 0.0015:
             alpha = 0.003
-        else:
+        elif alpha != 0.0015:
             alpha = 0.002
         Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
         Theta1 -= (alpha * Theta1_grad)
