@@ -184,7 +184,7 @@ def minJWithGradDescent(Theta1, Theta2, X, y):
     Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
     
     for i in range(7501): #deriv tries to get as small as possible
-        if i % 50 == 0:
+        if i % 100 == 0:
             jVal = J(Theta1, Theta2, X, y)
             print(i, jVal)
             if jVal < 1.3:
