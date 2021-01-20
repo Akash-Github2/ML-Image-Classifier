@@ -87,7 +87,7 @@ def trainModel(datasetX, datasetY):
     print("Training Model Started ...")
     start_time = arrow.utcnow()
     input_layer_size = len(datasetX[0])
-    hidden_layer_size = 80
+    hidden_layer_size = 60
     output_layer_size = len(keywords)
     
     Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
@@ -114,14 +114,11 @@ def J(Theta1, Theta2, X, y):
     X = np.array(X)
     J = 0
     m = len(X)
-    lambdaVal = 3
+    lambdaVal = 2
     
     onesCol4X = np.ones([1, len(X)], dtype = float)
     X2 = np.insert(X, 0, onesCol4X, axis=1)
     Y = convYToNewFormat(y) # n x len(keywords) matrix
-    # print("X Dim: ", str(X.shape))
-    # print("X2 Dim: ", str(X2.shape))
-    # print("Y Dim: ", str(Y.shape))
     
     for i in range(m):
         a1 = np.array([X2[i]]) #one row of X2 (one training example at a time) (1x901)
@@ -150,7 +147,7 @@ def J(Theta1, Theta2, X, y):
 def getGrad(Theta1, Theta2, X, y):
     X = np.array(X)
     m = len(X)
-    lambdaVal = 3
+    lambdaVal = 2
     onesCol4X = np.ones([1, len(X)], dtype = float)
     X2 = np.insert(X, 0, onesCol4X, axis=1)
     
@@ -186,15 +183,15 @@ def minJWithGradDescent(Theta1, Theta2, X, y):
     alpha = 0.004 #learning rate
     Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
     
-    for i in range(6501): #deriv tries to get as small as possible
+    for i in range(7501): #deriv tries to get as small as possible
         if i % 50 == 0:
             jVal = J(Theta1, Theta2, X, y)
             print(i, jVal)
-            if jVal < 1.34:
+            if jVal < 1.3:
                 alpha = 0.0015
         if i < 400 and alpha != 0.0015:
             alpha = 0.004
-        elif i < 3850 and alpha != 0.0015:
+        elif i < 3900 and alpha != 0.0015:
             alpha = 0.003
         elif alpha != 0.0015:
             alpha = 0.002
