@@ -3,6 +3,7 @@ import random as rand
 import math
 import numpy as np
 import os
+import arrow
 from Main import keywords, width, height #imports the public variables to the class
 
 #Loops through all the testing data set and calls predictObject() method
@@ -84,8 +85,9 @@ def randInitializeWeight(L_in, L_out):
 #Trains the model and will return the trained Theta1 and Theta2
 def trainModel(datasetX, datasetY):
     print("Training Model Started ...")
+    start_time = arrow.utcnow()
     input_layer_size = len(datasetX[0])
-    hidden_layer_size = 40
+    hidden_layer_size = 100
     output_layer_size = len(keywords)
     
     Theta1_init = randInitializeWeight(input_layer_size, hidden_layer_size)
@@ -93,10 +95,13 @@ def trainModel(datasetX, datasetY):
     
     Theta1, Theta2 = minJWithGradDescent(Theta1_init, Theta2_init, datasetX, datasetY)
     print("Training Model Completed!")
+    end_time = arrow.utcnow()
+    print("Time to Train (minutes):", str((end_time-start_time).total_seconds()/60))
     return Theta1, Theta2
 
 def sigmoid(z):
-    return 1 / (1 + math.e**(-z))
+    z[z < -700] = -700 #After this becomes positive, it will be infinity which is out of bounds
+    return 1 / (1 + np.exp(-z))
 
 def sigmoidGradient(z):
     return sigmoid(z) * (1-sigmoid(z))
@@ -181,9 +186,15 @@ def minJWithGradDescent(Theta1, Theta2, X, y):
     alpha = 0.004 #learning rate
     Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
     
-    for i in range(5001): #deriv tries to get as small as possible
-        if i % 250 == 0:
+    for i in range(501): #deriv tries to get as small as possible
+        if i % 20 == 0:
             print(i, J(Theta1, Theta2, X, y))
+        if i < 1000:
+            alpha = 0.004
+        elif i < 3500:
+            alpha = 0.003
+        else:
+            alpha = 0.002
         Theta1_grad, Theta2_grad = getGrad(Theta1, Theta2, X, y)
         Theta1 -= (alpha * Theta1_grad)
         Theta2 -= (alpha * Theta2_grad)
@@ -195,9 +206,7 @@ def convYToNewFormat(y):
     Y = np.zeros([len(y), len(keywords)], dtype = float)
     
     for i in range(len(y)):
-        ind = keywords.index(y[i][0])
-        Y[i][ind] = 1
-    
+        Y[i][keywords.index(y[i][0])] = 1
     return Y
 
 
